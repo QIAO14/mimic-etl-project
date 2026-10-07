@@ -27,7 +27,7 @@ MIMIC-IV 是麻省理工与贝斯以色列女执事医疗中心公开的真实�
 | C  | labevents + d\_labitems    | lab\_clean           | 过滤非数值 / 负值 / 缺 hadm\_id；**LEFT JOIN 字典表补检验项目名**   | 69548 行           |
 | D  | prescriptions + admissions | medication\_clean    | 过滤 `stoptime<starttime` 时间逻辑错误（753 条）、给药途径缺失；外键校验 | 17328 行           |
 | E  | 上述 4 张清洗表                  | patient\_visit\_wide | 多表聚合构建**患者就诊宽表**（16 字段，含住院时长、诊断 / 检验 / 用药计数）      | 275 行             |
-| F  | 全部清洗表                      | quality\_report      | UNION ALL 统计各表质量分                                 | 5 行（95.64\~100 分） |
+| F  | 全部清洗表                      | quality\_report      | UNION ALL 统计各表质量分                                 | 5 行 |
 
 ## 核心成果指标
 
@@ -43,9 +43,9 @@ MIMIC-IV 是麻省理工与贝斯以色列女执事医疗中心公开的真实�
 
 * **patient\_visit\_wide**：275 行宽表，平均住院时长 164.5 小时，死亡率 5.5%
 
-* **quality\_report**：5 张表数据质量分 **95.64 \~ 100**
+* **quality_report**：输出 5 张表数据质量报告
 
-## 关键技术难点与解决（面试亮点）
+## 关键技术难点与解决
 
 
 
@@ -57,11 +57,8 @@ MIMIC-IV 是麻省理工与贝斯以色列女执事医疗中心公开的真实�
 
    → **绕过方案**：直接在 MySQL 建好目标表，Kettle 表输出组件直接写入。
 
-3. **C 盘空间不足（仅 4.2GB）**：大 SQL 临时表写满 C 盘报 "No space left on device"。
 
-   → **根因**：mysqld 未加载 my.ini，tmpdir 走 C 盘。改用 `--defaults-file` 启动，tmpdir 指向 E 盘。
-
-4. **业务数据校验**：用药记录中 753 条 `stop_time < start_time` 逻辑错误被过滤，体现数据质量意识。
+4. **业务数据校验**：用药记录中 753 条 `stop_time < start_time` 逻辑错误被过滤，。
 
 ## 文件结构
 
